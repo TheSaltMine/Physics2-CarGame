@@ -17,6 +17,13 @@ struct Pendulum
 	void Render();
 };
 
+struct Ramp
+{
+	p2DynArray<PhysBody3D*> bodies;
+	Cube shape;
+	void Render();
+};
+
 class ModuleSceneIntro : public Module
 {
 public:
@@ -29,10 +36,10 @@ public:
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 	Pendulum* CreatePendulum(vec3 position, vec3 size, Color color);
+	Ramp* CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir = 0, bool loop = false, Color color = Red);
 
 public:
 	Pendulum* pendulum_1;
-	Cube ramp_cube;
-	p2DynArray<PhysBody3D*> ramp_1;
+	Ramp* ramp_1;
 	bool debug_mode = false;
 };

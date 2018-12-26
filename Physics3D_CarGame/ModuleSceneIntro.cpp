@@ -19,15 +19,13 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-	ramp_cube.color = Red;
-	ramp_cube.size = { 10, 1 , 5 };
 
-	ramp_1 = App->physics->AddRamp(ramp_cube, {10, 49.5, 10}, 50, 5, 1, false);
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
 	pendulum_1 = CreatePendulum({0,26,0}, {25,5,5}, Blue);
+	ramp_1 = CreateRamp({ 10, 49.5, 10 }, { 10, 1, 5 }, 50, 5, 1);
 
 	return ret;
 }
@@ -36,7 +34,10 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
-	ramp_1.Clear();
+	delete ramp_1;
+	ramp_1 = nullptr;
+	delete pendulum_1;
+	pendulum_1 = nullptr;
 
 	return true;
 }
@@ -67,12 +68,7 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	for (int i = 0; i < ramp_1.Count(); i++)
-	{
-		ramp_1[i]->GetTransform(&ramp_cube.transform);
-		ramp_cube.Render();
-	}
-
+	ramp_1->Render();
 	pendulum_1->Render();
 
 	return UPDATE_CONTINUE;
@@ -100,9 +96,56 @@ Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color
 
 	return pendulum;
 }
+Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir, bool loop, Color color)
+{
+	Cube c = {size.x, size.y, size.z};
+	c.color = color;
+	Ramp* ramp = new Ramp();
+	ramp->shape = c;
+
+	vec3 circle_center = { position.x, position.y + radius, position.z };
+	int angle = 180;
+	int angle_offset = 4;
+	float loopincr = 0;
+
+	for (int i = 0; i < chunks; i++)
+	{
+		if (dir == 0)
+		{
+			angle += angle_offset;
+			loopincr += 0.2F;
+		}
+		else
+		{
+			angle -= angle_offset;
+			loopincr -= 0.2F;
+		}
+		vec3 next_position = rotate(circle_center - position, angle, { 1, 0, 0 });
+		if (loop)
+			c.SetPos(next_position.x + position.x + loopincr, next_position.y + position.y, next_position.z + position.z);
+		else
+			c.SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z);
+
+		c.SetRotation(angle, { 1, 0, 0 });
+
+		PhysBody3D* pbody = App->physics->AddBody(c, 0);
+		ramp->bodies.PushBack(pbody);
+	}
+
+	return ramp;
+}
 
 void Pendulum::Render()
 {
 	body->GetTransform(&shape.transform);
 	shape.Render();
+}
+
+void Ramp::Render()
+{
+	for (int i = 0; i < bodies.Count(); i++)
+	{
+		bodies[i]->GetTransform(&shape.transform);
+		shape.Render();
+	}
 }
