@@ -4,6 +4,7 @@
 #include "Primitive.h"
 #include "PhysBody3D.h"
 #include "PhysVehicle3D.h"
+#include "Obstacle.h"
 #include "ModulePlayer.h"
 
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -24,8 +25,8 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	pendulum_1 = CreatePendulum({0,26,0}, {25,5,5}, Blue);
-	ramp_1 = CreateRamp({ 10, 49.5, 10 }, { 10, 1, 5 }, 50, 5, 1);
+	obstacles.PushBack(CreatePendulum({0,26,0}, {25,5,5}, Blue));
+	obstacles.PushBack(CreateRamp({ 10, 49.5, 10 }, { 10, 1, 5 }, 50, 5, 1));
 
 	return ret;
 }
@@ -34,10 +35,11 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
-	delete ramp_1;
-	ramp_1 = nullptr;
-	delete pendulum_1;
-	pendulum_1 = nullptr;
+	for (int i = 0; i < obstacles.Count(); i++)
+	{
+		delete obstacles[i];
+	}
+	obstacles.Clear();
 
 	return true;
 }
@@ -68,8 +70,10 @@ update_status ModuleSceneIntro::Update(float dt)
 	p.axis = true;
 	p.Render();
 
-	ramp_1->Render();
-	pendulum_1->Render();
+	for (int i = 0; i < obstacles.Count(); i++)
+	{
+		obstacles[i]->Render();
+	}
 
 	return UPDATE_CONTINUE;
 }
@@ -96,12 +100,15 @@ Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color
 
 	return pendulum;
 }
+
 Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir, bool loop, Color color)
 {
 	Cube c = {size.x, size.y, size.z};
 	c.color = color;
 	Ramp* ramp = new Ramp();
 	ramp->shape = c;
+	ramp->bodies = new PhysBody3D*[chunks];
+	ramp->chunks = chunks;
 
 	vec3 circle_center = { position.x, position.y + radius, position.z };
 	int angle = 180;
@@ -129,23 +136,8 @@ Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chu
 		c.SetRotation(angle, { 1, 0, 0 });
 
 		PhysBody3D* pbody = App->physics->AddBody(c, 0);
-		ramp->bodies.PushBack(pbody);
+		ramp->bodies[i] = pbody;
 	}
 
 	return ramp;
-}
-
-void Pendulum::Render()
-{
-	body->GetTransform(&shape.transform);
-	shape.Render();
-}
-
-void Ramp::Render()
-{
-	for (int i = 0; i < bodies.Count(); i++)
-	{
-		bodies[i]->GetTransform(&shape.transform);
-		shape.Render();
-	}
 }

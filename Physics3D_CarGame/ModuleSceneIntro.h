@@ -7,22 +7,9 @@
 #define CAMERA_Y_OFFSET 7
 
 struct PhysBody3D;
-
-struct Pendulum
-{
-	PhysBody3D* anchor = nullptr;
-	PhysBody3D* body = nullptr;
-	Cube shape;
-	Pendulum() {};
-	void Render();
-};
-
-struct Ramp
-{
-	p2DynArray<PhysBody3D*> bodies;
-	Cube shape;
-	void Render();
-};
+struct Obstacle;
+struct Ramp;
+struct Pendulum;
 
 class ModuleSceneIntro : public Module
 {
@@ -39,7 +26,6 @@ public:
 	Ramp* CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir = 0, bool loop = false, Color color = Red);
 
 public:
-	Pendulum* pendulum_1;
-	Ramp* ramp_1;
+	p2DynArray<Obstacle*> obstacles;
 	bool debug_mode = false;
 };
