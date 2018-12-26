@@ -3,6 +3,8 @@
 #include "Globals.h"
 #include "glmath.h"
 
+#define CAMERA_Y_OFFSET 7
+
 class ModuleCamera3D : public Module
 {
 public:

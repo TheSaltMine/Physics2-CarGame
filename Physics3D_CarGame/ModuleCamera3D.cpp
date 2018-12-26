@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "PhysBody3D.h"
 #include "ModuleCamera3D.h"
+#include "PhysVehicle3D.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -38,10 +39,25 @@ bool ModuleCamera3D::CleanUp()
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
+	// Game Functionality
+	//Camera position behind player
+	vec3 back_vector = App->player->vehicle->GetBackVector();
+
+	back_vector = back_vector * 15;
+	back_vector.y += CAMERA_Y_OFFSET;
+
+	Position = back_vector + App->player->vehicle->GetPosition();
+	//Reference = back_vector + App->player->vehicle->GetPosition();
+
+	//Camera look at player
+	vec3 vehicle_pos = App->player->vehicle->GetPosition();
+	vehicle_pos.y += CAMERA_Y_OFFSET;
+	App->camera->LookAt(vehicle_pos);
+
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
+	vec3 newPos(0, 0, 0);
 
-	vec3 newPos(0,0,0);
 	float speed = 3.0f * dt;
 	if(App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 		speed = 8.0f * dt;

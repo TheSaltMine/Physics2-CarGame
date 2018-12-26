@@ -139,3 +139,19 @@ float PhysVehicle3D::GetKmh() const
 {
 	return vehicle->getCurrentSpeedKmHour();
 }
+
+vec3 PhysVehicle3D::GetPosition() const
+{
+	vec3 vec3_pos;
+	btVector3 pos = vehicle->getChassisWorldTransform().getOrigin();
+	vec3_pos.Set(pos.getX(), pos.getY(), pos.getZ());
+	return vec3_pos;
+}
+
+vec3 PhysVehicle3D::GetBackVector() const
+{
+	vec3 back_vector;
+	btVector3 forward_vector = vehicle->getForwardVector();
+	back_vector.Set(-(forward_vector.getX()), -(forward_vector.getY()), -(forward_vector.getZ()) );
+	return back_vector;
+}
