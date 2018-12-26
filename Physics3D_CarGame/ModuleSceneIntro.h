@@ -5,6 +5,10 @@
 #include "Primitive.h"
 
 #define CAMERA_Y_OFFSET 7
+#define CAMERA_MIN_DISTANCE 15
+#define CAMERA_MAX_DISTANCE 30
+#define CAMERA_MIN_SPEED 50
+#define CAMERA_MAX_SPEED 220
 
 struct PhysBody3D;
 struct Obstacle;
@@ -28,4 +32,5 @@ public:
 public:
 	p2DynArray<Obstacle*> obstacles;
 	bool debug_mode = false;
+	float camera_distance = CAMERA_MIN_DISTANCE;
 };

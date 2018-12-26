@@ -55,7 +55,11 @@ update_status ModuleSceneIntro::Update(float dt)
 		//Camera position behind player
 		vec3 back_vector = App->player->vehicle->GetBackVector();
 
-		back_vector = back_vector * 15;
+		float distance_value = (App->player->vehicle->GetKmh()-CAMERA_MIN_SPEED) / ((CAMERA_MAX_SPEED)- CAMERA_MIN_SPEED); // normalize player speed
+		camera_distance = max(CAMERA_MIN_DISTANCE,((1 - distance_value)*CAMERA_MIN_DISTANCE) + (distance_value  * CAMERA_MAX_DISTANCE)); //lerp camera distance with normalized player speed
+
+		back_vector.z *= camera_distance;
+		back_vector.x *= camera_distance;
 		back_vector.y += CAMERA_Y_OFFSET;
 
 		App->camera->Position = back_vector + App->player->vehicle->GetPosition();
