@@ -371,11 +371,6 @@ p2DynArray<PhysBody3D*> ModulePhysics3D::AddRamp(const Cube& cube, vec3 position
 	return ramp;
 }
 
-PhysBody3D* ModulePhysics3D::AddPendulum(const Cube &cube, float mass)
-{
-	return nullptr;
-}
-
 // ---------------------------------------------------------
 void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB)
 {
@@ -400,33 +395,8 @@ void ModulePhysics3D::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, c
 		btVector3(axisB.x, axisB.y, axisB.z));
 
 	world->addConstraint(hinge, disable_collision);
-	//hinge->enableAngularMotor(true, 500, 1000);
-	hinge->setLimit(-120, 120);
 	constraints.add(hinge);
 	hinge->setDbgDrawSize(2.0f);
-}
-
-void ModulePhysics3D::AddConstraintSlider(PhysBody3D& bodyA, PhysBody3D& bodyB)
-{
-	btVector3 dif = bodyA.body->getCenterOfMassPosition() - bodyB.body->getCenterOfMassPosition();
-
-	btScalar rZ = atan2f(dif.getZ(), dif.getX());
-	btScalar rY = atan2f(dif.getY(), dif.getX());
-
-	btTransform tra, trb;
-	tra.setIdentity();
-	tra.getBasis().setEulerZYX(0, rY, rZ);
-	trb.setIdentity();
-	btSliderConstraint * motor = new btSliderConstraint(
-		*(bodyA.body),
-		*(bodyB.body),
-		tra, trb, true);
-
-	motor->setPoweredLinMotor(true);
-	motor->setMaxLinMotorForce(10000);
-	motor->setTargetLinMotorVelocity(0.0f);
-
-	world->addConstraint(motor);
 }
 
 // =============================================
