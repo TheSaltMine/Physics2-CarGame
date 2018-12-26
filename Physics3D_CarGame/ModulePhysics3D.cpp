@@ -332,6 +332,45 @@ PhysVehicle3D* ModulePhysics3D::AddVehicle(const VehicleInfo& info)
 	return pvehicle;
 }
 
+p2DynArray<PhysBody3D*> ModulePhysics3D::AddRamp(const Cube& cube, vec3 position, int radius, int size, int dir, bool loop)
+{
+	p2DynArray<PhysBody3D*> ramp;
+	vec3 circle_center = { position.x, position.y + radius, position.z };
+	int angle = 180;
+	int angle_offset = 4;
+	float loopincr = 0;
+
+	for (int i = 0; i < size; i++)
+	{
+		if (dir == 0) 
+		{
+			angle += angle_offset;
+			loopincr += 0.2F;
+		}
+		else 
+		{
+			angle -= angle_offset;
+			loopincr -= 0.2F;
+		}
+
+		PhysBody3D* pbody = AddBody(cube, 0);
+		vec3 next_position = rotate(circle_center - position, angle, { 1, 0, 0 });
+		btQuaternion rotation;
+		rotation.setRotation({ 1, 0, 0 }, angle * 3.14 / 180);
+		btTransform transform;
+
+		if (loop)
+			transform = btTransform(rotation, { next_position.x + position.x + loopincr, next_position.y + position.y, (next_position.z + position.z) });
+		else 
+			transform = btTransform(rotation, { next_position.x + position.x, next_position.y + position.y, next_position.z + position.z });
+
+		pbody->body->setWorldTransform(transform);
+		ramp.PushBack(pbody);
+	}
+
+	return ramp;
+}
+
 // ---------------------------------------------------------
 void ModulePhysics3D::AddConstraintP2P(PhysBody3D& bodyA, PhysBody3D& bodyB, const vec3& anchorA, const vec3& anchorB)
 {
