@@ -8,6 +8,15 @@
 
 struct PhysBody3D;
 
+struct Pendulum
+{
+	PhysBody3D* anchor = nullptr;
+	PhysBody3D* body = nullptr;
+	Cube shape;
+	Pendulum() {};
+	void Render();
+};
+
 class ModuleSceneIntro : public Module
 {
 public:
@@ -19,8 +28,10 @@ public:
 	bool CleanUp();
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
+	Pendulum* CreatePendulum(vec3 position, vec3 size, Color color);
 
 public:
+	Pendulum* pendulum_1;
 	Cube ramp_cube;
 	p2DynArray<PhysBody3D*> ramp_1;
 	bool debug_mode = false;

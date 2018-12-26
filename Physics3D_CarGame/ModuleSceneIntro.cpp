@@ -22,11 +22,12 @@ bool ModuleSceneIntro::Start()
 	ramp_cube.color = Red;
 	ramp_cube.size = { 10, 1 , 5 };
 
-	ramp_1 = App->physics->AddRamp(ramp_cube, {10, 24.5, 10}, 25, 8, 1, false);
+	ramp_1 = App->physics->AddRamp(ramp_cube, {10, 49.5, 10}, 50, 5, 1, false);
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
+	pendulum_1 = CreatePendulum({0,26,0}, {25,5,5}, Blue);
 
 	return ret;
 }
@@ -35,6 +36,7 @@ bool ModuleSceneIntro::Start()
 bool ModuleSceneIntro::CleanUp()
 {
 	LOG("Unloading Intro scene");
+	ramp_1.Clear();
 
 	return true;
 }
@@ -71,6 +73,8 @@ update_status ModuleSceneIntro::Update(float dt)
 		ramp_cube.Render();
 	}
 
+	pendulum_1->Render();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -78,3 +82,27 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 }
 
+Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color)
+{
+	Pendulum* pendulum = new Pendulum();
+
+	Cube anchor_shape(1, 1, 1);
+	anchor_shape.SetPos(position.x, position.y, position.z);
+
+	Cube b(size.x, size.y, size.z);
+	b.color = color;
+	b.SetPos(position.x + size.x, position.y, position.z);
+	pendulum->shape = b;
+
+	pendulum->anchor = App->physics->AddBody(anchor_shape, 0);
+	pendulum->body = App->physics->AddBody(b, 10000);
+	App->physics->AddConstraintHinge(*pendulum->anchor, *pendulum->body, { 0, 0 ,0 }, { -size.x/2, 0, 0 }, { 0,0,1 }, { 0,0,1 }, true);
+
+	return pendulum;
+}
+
+void Pendulum::Render()
+{
+	body->GetTransform(&shape.transform);
+	shape.Render();
+}
