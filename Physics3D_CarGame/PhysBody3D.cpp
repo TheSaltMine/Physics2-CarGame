@@ -48,6 +48,13 @@ void PhysBody3D::SetPos(float x, float y, float z)
 	body->setWorldTransform(t);
 }
 
+vec3 PhysBody3D::GetPos()
+{
+	btTransform t = body->getWorldTransform();
+	btVector3 origin = t.getOrigin();
+	return { origin.getX(),origin.getY(), origin.getZ() };
+}
+
 void PhysBody3D::SetAsSensor(bool is_sensor)
 {
 	if (this->is_sensor != is_sensor)

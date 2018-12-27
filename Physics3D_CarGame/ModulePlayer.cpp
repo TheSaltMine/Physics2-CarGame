@@ -36,19 +36,6 @@ bool ModulePlayer::Start()
 	car.body_size.Set(1, 2.5, 1);
 	car.body_offset.Set(0, 3, 0);
 
-	/*car.right_arm_size.Set(2, 2, 4);
-	car.right_arm_offset.Set(0, 1.5, 0);
-
-	car.left_arm_size.Set(2, 2, 4);
-	car.left_arm_offset.Set(0, 1.5, 0);
-
-	car.right_leg_size.Set(2, 2, 4);
-	car.right_leg_offset.Set(0, 1.5, 0);
-
-	car.left_leg_size.Set(2, 2, 4);
-	car.left_leg_offset.Set(0, 1.5, 0);*/
-
-
 	car.mass = 500.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
@@ -124,7 +111,7 @@ bool ModulePlayer::Start()
 
 	vehicle = App->physics->AddVehicle(car);
 	vehicle->SetPos(0, 5, 10);
-	
+	vehicle->collision_listeners.add(App->scene_intro);
 	return true;
 }
 

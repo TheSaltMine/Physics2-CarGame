@@ -31,6 +31,9 @@ public:
 
 public:
 	p2DynArray<Obstacle*> obstacles;
+	PhysBody3D* checkpoint;
+
+	PhysBody3D* current_checkpoint = nullptr;
 	bool debug_mode = false;
 	float camera_distance = CAMERA_MIN_DISTANCE;
 };

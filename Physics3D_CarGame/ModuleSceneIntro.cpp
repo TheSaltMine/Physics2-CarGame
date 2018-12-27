@@ -20,10 +20,14 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
-
-
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
+
+
+	Cube c = { 10,10,10 };
+	c.SetPos(50, 0, 50);
+	checkpoint = App->physics->AddBody(c, 0, this);
+	checkpoint->SetAsSensor(true);
 
 	obstacles.PushBack(CreatePendulum({0,26,0}, {25,5,5}, Blue));
 	obstacles.PushBack(CreateRamp({ 10, 49.5, 10 }, { 10, 1, 5 }, 50, 5, 1));
@@ -50,6 +54,12 @@ update_status ModuleSceneIntro::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN)
 		debug_mode = !debug_mode;
 
+	if (App->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
+	{
+		vec3 checkpoint_pos = current_checkpoint->GetPos();
+		App->player->vehicle->SetPos(checkpoint_pos.x, checkpoint_pos.y, checkpoint_pos.z);
+	}
+
 	if (!debug_mode)
 	{
 		//Camera position behind player
@@ -62,10 +72,10 @@ update_status ModuleSceneIntro::Update(float dt)
 		back_vector.x *= camera_distance;
 		back_vector.y += CAMERA_Y_OFFSET;
 
-		App->camera->Position = back_vector + App->player->vehicle->GetPosition();
+		App->camera->Position = back_vector + App->player->vehicle->GetPos();
 
 		//Camera look at player
-		vec3 vehicle_pos = App->player->vehicle->GetPosition();
+		vec3 vehicle_pos = App->player->vehicle->GetPos();
 		vehicle_pos.y += CAMERA_Y_OFFSET;
 		App->camera->LookAt(vehicle_pos);
 	}
@@ -84,6 +94,10 @@ update_status ModuleSceneIntro::Update(float dt)
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
+	if (body2 == checkpoint)
+	{
+		current_checkpoint = checkpoint;
+	}
 }
 
 Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color)
