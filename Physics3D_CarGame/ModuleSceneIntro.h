@@ -14,6 +14,7 @@ struct PhysBody3D;
 struct Obstacle;
 struct Ramp;
 struct Pendulum;
+struct Curve;
 
 class ModuleSceneIntro : public Module
 {
@@ -26,8 +27,10 @@ public:
 	bool CleanUp();
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
-	Pendulum* CreatePendulum(vec3 position, vec3 size, Color color);
+	Pendulum* CreatePendulum(vec3 position, vec3 size, Color color = Blue, bool left = false);
 	Ramp* CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir = 0, bool loop = false, Color color = Red);
+	Curve* CreateCurve(vec3 position, vec3 size, float initial_angle, float final_angle, Color color = White);
+	Obstacle* CreateObstacle(vec3 position, vec3 size, Color color = White);
 
 public:
 	p2DynArray<Obstacle*> obstacles;

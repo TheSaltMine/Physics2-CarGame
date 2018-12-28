@@ -44,3 +44,12 @@ Pendulum::~Pendulum()
 {
 	anchor = nullptr;
 }
+
+void Curve::Render()
+{
+	for (int i = 0; i < bodies.Count(); i++)
+	{
+		bodies[i]->GetTransform(&shape.transform);
+		shape.Render();
+	}
+}

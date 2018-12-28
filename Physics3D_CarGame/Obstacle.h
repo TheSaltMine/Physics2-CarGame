@@ -34,3 +34,13 @@ public:
 	int chunks = 0;
 	PhysBody3D** bodies = nullptr;
 };
+
+class Curve : public Obstacle
+{
+public:
+	Curve() {}
+	~Curve();
+	void Render() override;
+	p2DynArray<PhysBody3D*> bodies;
+};
+

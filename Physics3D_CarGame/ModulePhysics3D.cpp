@@ -237,7 +237,8 @@ PhysBody3D* ModulePhysics3D::AddBody(const Cube& cube, float mass, Module* paren
 
 	btRigidBody* body = new btRigidBody(rbInfo);
 	PhysBody3D* pbody = new PhysBody3D(body);
-	pbody->collision_listeners.add(parent);
+	if(parent) 
+		pbody->collision_listeners.add(parent);
 
 	world->addRigidBody(body);
 	bodies.add(pbody);
