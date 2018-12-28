@@ -36,7 +36,7 @@ bool ModulePlayer::Start()
 	car.body_size.Set(2, 0.5, 3.5);
 	car.body_offset.Set(0, 1.5, 0);
 
-	car.mass = 500.0f;
+	car.mass = 100.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
@@ -128,7 +128,7 @@ update_status ModulePlayer::Update(float dt)
 {
 	turn = acceleration = brake = 0.0f;
 
-	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT && vehicle->GetKmh() < MAX_VELOCITY)
 	{
 		acceleration = MAX_ACCELERATION;
 	}

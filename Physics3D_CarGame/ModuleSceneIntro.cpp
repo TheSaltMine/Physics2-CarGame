@@ -31,18 +31,21 @@ bool ModuleSceneIntro::Start()
 	checkpoint->SetAsSensor(true);
 
 
-	obstacles.PushBack(CreateObstacle({ 0,50,0 }, { 50,1,50 }));
-	obstacles.PushBack(CreateCurve({ -40,50,25 }, { 50,1,10 }, 90, 180));
-	obstacles.PushBack(CreateObstacle({ -90,50,65 }, { 100,1,50 }));
+	obstacles.PushBack(CreateObstacle({ 0,50,0 }, { 25,1,50 }));
+	obstacles.PushBack(CreateCurve({ -27.5,50,30 }, { 25,1,10 }, 90, 180));
+	obstacles.PushBack(CreateObstacle({ -80,50,57.5 }, { 100,1,25 }));
+	obstacles.PushBack(CreateCurve({ -135,50,85 }, { 25,1,10 }, 270, 360));
+	obstacles.PushBack(CreateObstacle({ -162.5,50,165 }, { 25,1,150 }));
 
+	obstacles.PushBack(CreateRamp({ -162.5, 100, 235 }, { 25, 1, 5 }, 50, 10, 1));
+	obstacles.PushBack(CreateRamp({ -162.5, 100, 350 }, { 25, 1, 5 }, 50, 10, 0));
+	obstacles.PushBack(CreateObstacle({ -162.5,50, 370 }, { 25,1,50 }));
+	obstacles.PushBack(CreateCurve({ -190,50,400 }, { 25,1,10 }, 90, 180));
+	obstacles.PushBack(CreateObstacle({ -220,50, 427.5 }, { 50,1,25 }));
 
-
-
-
-
-	obstacles.PushBack(CreatePendulum({ 0,76,25 }, { 25,5,5 }, Blue, true));
+/*	obstacles.PushBack(CreatePendulum({ 0,76,25 }, { 25,5,5 }, Blue, true));
 	obstacles.PushBack(CreatePendulum({ 0,76,35 }, { 25,5,5 }, Blue));
-	obstacles.PushBack(CreateRamp({ 0, 100, -20 }, { 10, 1, 5 }, 50, 5, 1));
+	*/
 
 	return ret;
 }
@@ -145,7 +148,7 @@ Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chu
 
 	vec3 circle_center = { position.x, position.y + radius, position.z };
 	int angle = 180;
-	int angle_offset = 4;
+	int angle_offset = 2;
 	float loopincr = 0;
 
 	for (int i = 0; i < chunks; i++)
