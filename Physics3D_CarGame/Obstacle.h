@@ -19,13 +19,20 @@ public:
 	~Obstacle();
 
 	OBSTACLE_TYPE type = BASIC;
-	PhysBody3D* body = nullptr;
+	p2DynArray<PhysBody3D*> bodies;
 	Cube shape;
 
 	virtual void Render();
 };
 
-
+class Road :public Obstacle
+{
+public:
+	Road() {};
+	~Road();
+	Cube border_shape;
+	void Render();
+};
 class Pendulum : public Obstacle
 {
 public:
@@ -46,9 +53,6 @@ public:
 		type = RAMP;
 	};
 	~Ramp();
-	void Render() override;
-	int chunks = 0;
-	PhysBody3D** bodies = nullptr;
 };
 
 class Curve : public Obstacle
@@ -59,8 +63,6 @@ public:
 		type = CURVE;
 	};
 	~Curve();
-	void Render() override;
-	p2DynArray<PhysBody3D*> bodies;
 };
 
 class Arch : public Obstacle
@@ -73,5 +75,4 @@ public:
 	~Arch();
 	void Render() override;
 	Cube column_shape;
-	p2DynArray<PhysBody3D*> bodies;
 };

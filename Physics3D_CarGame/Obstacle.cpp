@@ -15,37 +15,10 @@ Obstacle::Obstacle()
 
 Obstacle::~Obstacle()
 {
-	body = nullptr;
+	bodies.Clear();
 }
 
 void Obstacle::Render()
-{
-	body->GetTransform(&shape.transform);
-	shape.Render();
-}
-
-
-Ramp::~Ramp()
-{
-	delete[] bodies;
-	bodies = nullptr;
-}
-
-void Ramp::Render()
-{
-	for (int i = 0; i < chunks; i++)
-	{
-		bodies[i]->GetTransform(&shape.transform);
-		shape.Render();
-	}
-}
-
-Pendulum::~Pendulum()
-{
-	anchor = nullptr;
-}
-
-void Curve::Render()
 {
 	for (int i = 0; i < bodies.Count(); i++)
 	{
@@ -53,6 +26,13 @@ void Curve::Render()
 		shape.Render();
 	}
 }
+
+
+Pendulum::~Pendulum()
+{
+	anchor = nullptr;
+}
+
 
 void Arch::Render()
 {
@@ -64,4 +44,15 @@ void Arch::Render()
 	column_shape.Render();
 	bodies[2]->GetTransform(&column_shape.transform);
 	column_shape.Render();
+}
+
+void Road::Render()
+{
+	bodies[0]->GetTransform(&shape.transform);
+	shape.Render();
+
+	bodies[1]->GetTransform(&border_shape.transform);
+	border_shape.Render();
+	bodies[2]->GetTransform(&border_shape.transform);
+	border_shape.Render();
 }

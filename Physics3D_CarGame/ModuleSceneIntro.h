@@ -16,6 +16,7 @@ struct Ramp;
 struct Pendulum;
 struct Curve;
 struct Arch;
+struct Road;
 
 class ModuleSceneIntro : public Module
 {
@@ -30,9 +31,9 @@ public:
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 	Pendulum* CreatePendulum(vec3 position, vec3 size, Color color = Blue, bool left = false);
 	Ramp* CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir = 0, bool horizontal = false, bool loop = false, Color color = Red);
-	Curve* CreateCurve(vec3 position, vec3 size, float initial_angle, float final_angle, Color color = White);
-	Arch* CreateArch(vec3 position, vec3 size, bool horizontal = true, Color color = Green);
-	Obstacle* CreateObstacle(vec3 position, vec3 size, Color color = White);
+	void CreateCurve(vec3 position, vec3 size, float initial_angle, float final_angle, Color color = White);
+	Arch* CreateArch(vec3 position, vec3 size, float angle = 0.0f, Color color = Green);
+	Road* CreateRoad(vec3 position, vec3 size, float angle = 0.0f, Color color = White);
 
 public:
 	p2DynArray<Obstacle*> obstacles;
