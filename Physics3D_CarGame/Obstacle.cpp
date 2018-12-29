@@ -53,3 +53,15 @@ void Curve::Render()
 		shape.Render();
 	}
 }
+
+void Checkpoint::Render()
+{
+	//needs imporvement, very dirt and risky
+	bodies[0]->GetTransform(&shape.transform);
+	shape.Render();
+
+	bodies[1]->GetTransform(&column_shape.transform);
+	column_shape.Render();
+	bodies[2]->GetTransform(&column_shape.transform);
+	column_shape.Render();
+}

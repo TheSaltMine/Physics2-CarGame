@@ -3,12 +3,22 @@
 #include "p2DynArray.h"
 struct PhysBody3D;
 
+
+enum OBSTACLE_TYPE{
+	BASIC,
+	PENDULUM,
+	RAMP,
+	CURVE,
+	CHECKPOINT
+};
+
 class Obstacle
 {
 public:
 	Obstacle();
 	~Obstacle();
 
+	OBSTACLE_TYPE type = BASIC;
 	PhysBody3D* body = nullptr;
 	Cube shape;
 
@@ -21,14 +31,20 @@ class Pendulum : public Obstacle
 public:
 	PhysBody3D* anchor = nullptr;
 
-	Pendulum() {};
+	Pendulum() 
+	{
+		type = PENDULUM;
+	};
 	~Pendulum();
 };
 
 class Ramp : public Obstacle
 {
 public:
-	Ramp() {};
+	Ramp() 
+	{
+		type = RAMP;
+	};
 	~Ramp();
 	void Render() override;
 	int chunks = 0;
@@ -38,9 +54,25 @@ public:
 class Curve : public Obstacle
 {
 public:
-	Curve() {}
+	Curve()
+	{
+		type = CURVE;
+	};
 	~Curve();
 	void Render() override;
 	p2DynArray<PhysBody3D*> bodies;
 };
 
+class Checkpoint : public Obstacle
+{
+public:
+	Checkpoint()
+	{
+		type = CHECKPOINT;
+	};
+	~Checkpoint();
+	void Render() override;
+	Cube column_shape;
+	p2DynArray<PhysBody3D*> bodies;
+	PhysBody3D* checkpoint = nullptr;
+};

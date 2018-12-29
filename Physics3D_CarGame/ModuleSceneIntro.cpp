@@ -7,8 +7,6 @@
 #include "Obstacle.h"
 #include "ModulePlayer.h"
 
-#define PI 3.14159265
-
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -25,12 +23,9 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	Cube c = { 10,10,10 };
-	c.SetPos(50, 0, 50);
-	checkpoint = App->physics->AddBody(c, 0, this);
-	checkpoint->SetAsSensor(true);
-
-
+	Checkpoint* start = CreateCheckpoint({ 0,50, 0 }, { 25, 5 ,5 });
+	current_checkpoint = start->checkpoint;
+	obstacles.PushBack(start);
 	obstacles.PushBack(CreateObstacle({ 0,50,0 }, { 25,1,50 }));
 	obstacles.PushBack(CreateCurve({ -27.5,50,30 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -80,50,57.5 }, { 100,1,25 }));
@@ -48,6 +43,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateCurve({ -415,50,317.5 }, { 25,1,10 }, 180, 360));
 	obstacles.PushBack(CreateObstacle({ -442.5,50, 360 }, { 25,1,75 }));
 	obstacles.PushBack(CreateRamp({ -442, 100, 395 }, { 25, 1, 5 }, 50, 72, 1, false, true));
+	obstacles.PushBack(CreateCheckpoint({ -478,50, 447.5 }, { 25, 5 , 5 }));
 	obstacles.PushBack(CreateObstacle({ -478,50, 447.5 }, { 25,1,100 }));
 	obstacles.PushBack(CreateCurve({ -505.5,50,500 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -548,50, 527.5 }, { 75,1,25 }));
@@ -63,6 +59,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateObstacle({ -375, 75, 392 }, { 75,1,25 }));
 	obstacles.PushBack(CreateRamp({ -335, 105, 399 }, { 10, 1, 50 }, 30, 288, 0, true, true));
 	obstacles.PushBack(CreateObstacle({ -292.5, 75, 550.5 }, { 75,1,25 }));
+	obstacles.PushBack(CreateCheckpoint({ -292.5, 75, 550.5 }, { 5, 5 , 25 }, false));
 	obstacles.PushBack(CreateCurve({ -250, 75, 523 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -222.5, 75, 460 }, { 25, 1, 125 }));
 	obstacles.PushBack(CreatePendulum({ -222.5,101, 435 }, { 25,5,5 }, Blue, true));
@@ -132,9 +129,10 @@ update_status ModuleSceneIntro::Update(float dt)
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	if (body2 == checkpoint)
+	for (int i = 0; i < obstacles.Count(); i++)
 	{
-		current_checkpoint = checkpoint;
+		if (obstacles[i]->type == CHECKPOINT && body2 == ((Checkpoint*)obstacles[i])->checkpoint)
+			current_checkpoint = ((Checkpoint*)obstacles[i])->checkpoint;
 	}
 }
 
@@ -240,8 +238,8 @@ Curve* ModuleSceneIntro::CreateCurve(vec3 position, vec3 size, float initial_ang
 
 	while (initial_angle <= final_angle)
 	{
-		float z_offset = initial_angle > 180 ? -abs((offset + (size.x/2))*sinf((initial_angle*PI) / 180)) : abs((offset + (size.x / 2))*sinf((initial_angle*PI) / 180));
-		c.SetPos(position.x - ((offset + (size.x/2))*cosf((initial_angle*PI) / 180)), position.y, position.z + z_offset);
+		float z_offset = initial_angle > 180 ? -abs((offset + (size.x/2))*sinf(initial_angle*DEGTORAD)) : abs((offset + (size.x / 2))*sinf(initial_angle*DEGTORAD));
+		c.SetPos(position.x - ((offset + (size.x/2))*cosf(initial_angle*DEGTORAD)), position.y, position.z + z_offset);
 		c.SetRotation(initial_angle, { 0,1,0 });
 		PhysBody3D* pbody = App->physics->AddBody(c, 0);
 		curve->bodies.PushBack(pbody);
@@ -249,4 +247,48 @@ Curve* ModuleSceneIntro::CreateCurve(vec3 position, vec3 size, float initial_ang
 	}
 
 	return curve;
+}
+
+Checkpoint* ModuleSceneIntro::CreateCheckpoint(vec3 position, vec3 size, bool horizontal, Color color)
+{
+	Checkpoint* checkpoint = new Checkpoint();
+
+	Cube sensor(size.x, size.y, size.z);
+	sensor.SetPos(position.x, position.y, position.z);
+	checkpoint->checkpoint = App->physics->AddBody(sensor, 0, this);
+	checkpoint->checkpoint->SetAsSensor(true);
+
+	if (horizontal)
+	{
+		sensor.SetPos(position.x, position.y + (size.x/2.5), position.z);
+		sensor.color = color;
+		checkpoint->bodies.PushBack(App->physics->AddBody(sensor, 0));
+		checkpoint->shape = sensor;
+
+		Cube c(size.y, size.x / 2, size.z);
+		c.color = color;
+		checkpoint->column_shape = c;
+		c.SetPos(position.x + (size.x/2.5), position.y + (size.x / 4), position.z);
+		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+		c.SetPos(position.x - (size.x / 2.5), position.y + (size.x /4), position.z);
+		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+	}
+	else
+	{
+		sensor.SetPos(position.x, position.y + (size.z / 2.5), position.z);
+		sensor.color = color;
+		checkpoint->bodies.PushBack(App->physics->AddBody(sensor, 0));
+		checkpoint->shape = sensor;
+
+		Cube c(size.x, size.z / 2, size.y);
+		c.color = color;
+		checkpoint->column_shape = c;
+		c.SetPos(position.x , position.y + (size.z / 4), position.z + (size.z / 2.5));
+		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+		c.SetPos(position.x , position.y + (size.z / 4), position.z - (size.z / 2.5));
+		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+	}
+
+	return checkpoint;
+
 }
