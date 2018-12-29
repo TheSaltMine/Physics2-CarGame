@@ -37,7 +37,7 @@ public:
 
 private:
 
-	bool debug;
+	bool debug = false;
 
 	btDefaultCollisionConfiguration*	collision_conf;
 	btCollisionDispatcher*				dispatcher;

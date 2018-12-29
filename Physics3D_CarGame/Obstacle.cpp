@@ -54,9 +54,9 @@ void Curve::Render()
 	}
 }
 
-void Checkpoint::Render()
+void Arch::Render()
 {
-	//needs imporvement, very dirt and risky
+	//needs improvement, very dirt and risky
 	bodies[0]->GetTransform(&shape.transform);
 	shape.Render();
 

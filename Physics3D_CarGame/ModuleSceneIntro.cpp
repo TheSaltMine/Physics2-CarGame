@@ -23,9 +23,34 @@ bool ModuleSceneIntro::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-	Checkpoint* start = CreateCheckpoint({ 0,50, 0 }, { 25, 5 ,5 });
-	current_checkpoint = start->checkpoint;
-	obstacles.PushBack(start);
+	game_timer.Start();
+
+	//Sensors
+	PhysBody3D* tmp_sensor;
+	Cube horizontal(25, 5, 5);
+	horizontal.SetPos(0, 50, 0);
+	start = App->physics->AddBody(horizontal, 0);
+	start->SetAsSensor(true);
+	sensors.PushBack(start);
+	horizontal.SetPos(-478, 50, 447.5);
+	tmp_sensor = App->physics->AddBody(horizontal, 0);
+	tmp_sensor->SetAsSensor(true);
+	sensors.PushBack(tmp_sensor);
+
+	Cube vertical(5, 5, 25);
+	vertical.SetPos(-460, 125, 500);
+	finish = App->physics->AddBody(vertical, 0);
+	finish->SetAsSensor(true);
+	sensors.PushBack(finish);
+	vertical.SetPos(-292.5, 75, 550.5);
+	tmp_sensor = App->physics->AddBody(vertical, 0);
+	tmp_sensor->SetAsSensor(true);
+	sensors.PushBack(tmp_sensor);
+
+	current_checkpoint = start;
+
+	//Map obstacles
+	obstacles.PushBack(CreateArch({ 0,50, 0 }, { 25, 5 ,5 }));
 	obstacles.PushBack(CreateObstacle({ 0,50,0 }, { 25,1,50 }));
 	obstacles.PushBack(CreateCurve({ -27.5,50,30 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -80,50,57.5 }, { 100,1,25 }));
@@ -43,7 +68,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateCurve({ -415,50,317.5 }, { 25,1,10 }, 180, 360));
 	obstacles.PushBack(CreateObstacle({ -442.5,50, 360 }, { 25,1,75 }));
 	obstacles.PushBack(CreateRamp({ -442, 100, 395 }, { 25, 1, 5 }, 50, 72, 1, false, true));
-	obstacles.PushBack(CreateCheckpoint({ -478,50, 447.5 }, { 25, 5 , 5 }));
+	obstacles.PushBack(CreateArch({ -478,50, 447.5 }, { 25, 5 , 5 }));
 	obstacles.PushBack(CreateObstacle({ -478,50, 447.5 }, { 25,1,100 }));
 	obstacles.PushBack(CreateCurve({ -505.5,50,500 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -548,50, 527.5 }, { 75,1,25 }));
@@ -57,14 +82,23 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateCurve({ -535.5,64.5, 419.5 }, { 25,1,10 }, 270, 360));
 	obstacles.PushBack(CreateRamp({ -538, 244.5, 392}, { 17, 1, 25 }, 180, 3, 0, true));
 	obstacles.PushBack(CreateObstacle({ -375, 75, 392 }, { 75,1,25 }));
-	obstacles.PushBack(CreateRamp({ -335, 105, 399 }, { 10, 1, 50 }, 30, 288, 0, true, true));
+	obstacles.PushBack(CreateRamp({ -335, 105, 399 }, { 10, 1, 42 }, 30, 288, 0, true, true));
 	obstacles.PushBack(CreateObstacle({ -292.5, 75, 550.5 }, { 75,1,25 }));
-	obstacles.PushBack(CreateCheckpoint({ -292.5, 75, 550.5 }, { 5, 5 , 25 }, false));
+	obstacles.PushBack(CreateArch({ -292.5, 75, 550.5 }, { 5, 5 , 25 }, false));
 	obstacles.PushBack(CreateCurve({ -250, 75, 523 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -222.5, 75, 460 }, { 25, 1, 125 }));
 	obstacles.PushBack(CreatePendulum({ -222.5,101, 435 }, { 25,5,5 }, Blue, true));
 	obstacles.PushBack(CreatePendulum({ -222.5,101, 455 }, { 25,5,5 }, Blue));
 	obstacles.PushBack(CreatePendulum({ -222.5,101, 475 }, { 25,5,5 }, Blue, true));
+	obstacles.PushBack(CreateCurve({ -195, 75, 393 }, { 25,1,10 }, 270, 360));
+	obstacles.PushBack(CreateObstacle({ -140, 75, 365.5 }, { 100, 1, 25 }));
+	obstacles.PushBack(CreateCurve({ -85, 75, 393 }, { 25,1,10 }, 180, 270));
+	obstacles.PushBack(CreateObstacle({ -57.5, 75, 435 }, { 25, 1, 75 }));
+	obstacles.PushBack(CreateCurve({ -85, 75, 475 }, { 25,1,10 }, 90, 180));
+	obstacles.PushBack(CreateObstacle({ -127.5, 75, 502.5 }, { 75, 1, 25 }));
+	obstacles.PushBack(CreateRamp({ -155, 255,502.5 }, { 18, 1, 25 }, 180, 7, 1, true));
+	obstacles.PushBack(CreateObstacle({ -430, 125, 500 }, { 75, 1, 25 }));
+	obstacles.PushBack(CreateArch({ -460, 125, 500 }, { 5, 5 , 25 }, false, Red));
 
 	return ret;
 }
@@ -86,12 +120,25 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update(float dt)
 {
 	if (App->input->GetKey(SDL_SCANCODE_F10) == KEY_DOWN)
+	{
 		debug_mode = !debug_mode;
-
+		App->player->can_move = !App->player->can_move;
+		App->camera->debug = !App->camera->debug;
+	}
 	if (App->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
 	{
-		vec3 checkpoint_pos = current_checkpoint->GetPos();
-		App->player->vehicle->SetPos(checkpoint_pos.x, checkpoint_pos.y, checkpoint_pos.z);
+		mat4x4 matrix;
+		current_checkpoint->GetTransform(&matrix);
+		App->player->vehicle->SetTransform(&matrix);
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+	{
+		current_checkpoint = start;
+		mat4x4 matrix;
+		current_checkpoint->GetTransform(&matrix);
+		App->player->vehicle->SetTransform(&matrix);
+		game_timer.Start();
+		debug_mode = false;
 	}
 
 	if (!debug_mode)
@@ -115,24 +162,43 @@ update_status ModuleSceneIntro::Update(float dt)
 		App->camera->LookAt(vehicle_pos+up_vector);
 	}
 
-	Plane p(0, 1, 0, 0);
-	p.axis = true;
-	p.Render();
-
 	for (int i = 0; i < obstacles.Count(); i++)
 	{
 		obstacles[i]->Render();
 	}
+
+
+	char title[100];
+	Uint32 ms = game_timer.Read();
+	Uint32 seconds = ms/1000;
+	Uint32 minutes = seconds/60;
+	sprintf_s(title, "PLAYER_TIME: %02d:%02d:%02d   GOLD_TIME: 01:30:00    SILVER: 02:30:00    BRONZE: 05:00:00", minutes, seconds - (60*minutes), (ms % 1000)/10);
+	App->window->SetTitle(title);
+
 
 	return UPDATE_CONTINUE;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	for (int i = 0; i < obstacles.Count(); i++)
+	if (body1 == App->player->vehicle)
 	{
-		if (obstacles[i]->type == CHECKPOINT && body2 == ((Checkpoint*)obstacles[i])->checkpoint)
-			current_checkpoint = ((Checkpoint*)obstacles[i])->checkpoint;
+		if (body2 == finish)
+		{
+			//finish game
+			debug_mode = true;
+			game_timer.Stop();
+		}
+		else
+		{
+			for (int i = 0; i < sensors.Count(); i++)
+			{
+				if (sensors[i] == body2)
+				{
+					current_checkpoint = sensors[i];
+				}
+			}
+		}
 	}
 }
 
@@ -249,46 +315,44 @@ Curve* ModuleSceneIntro::CreateCurve(vec3 position, vec3 size, float initial_ang
 	return curve;
 }
 
-Checkpoint* ModuleSceneIntro::CreateCheckpoint(vec3 position, vec3 size, bool horizontal, Color color)
+Arch* ModuleSceneIntro::CreateArch(vec3 position, vec3 size, bool horizontal, Color color)
 {
-	Checkpoint* checkpoint = new Checkpoint();
+	Arch* arch = new Arch();
 
-	Cube sensor(size.x, size.y, size.z);
-	sensor.SetPos(position.x, position.y, position.z);
-	checkpoint->checkpoint = App->physics->AddBody(sensor, 0, this);
-	checkpoint->checkpoint->SetAsSensor(true);
+	Cube base(size.x, size.y, size.z);
+	base.SetPos(position.x, position.y, position.z);
 
 	if (horizontal)
 	{
-		sensor.SetPos(position.x, position.y + (size.x/2.5), position.z);
-		sensor.color = color;
-		checkpoint->bodies.PushBack(App->physics->AddBody(sensor, 0));
-		checkpoint->shape = sensor;
+		base.SetPos(position.x, position.y + (size.x/2.5), position.z);
+		base.color = color;
+		arch->bodies.PushBack(App->physics->AddBody(base, 0));
+		arch->shape = base;
 
 		Cube c(size.y, size.x / 2, size.z);
 		c.color = color;
-		checkpoint->column_shape = c;
+		arch->column_shape = c;
 		c.SetPos(position.x + (size.x/2.5), position.y + (size.x / 4), position.z);
-		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+		arch->bodies.PushBack(App->physics->AddBody(c, 0));
 		c.SetPos(position.x - (size.x / 2.5), position.y + (size.x /4), position.z);
-		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+		arch->bodies.PushBack(App->physics->AddBody(c, 0));
 	}
 	else
 	{
-		sensor.SetPos(position.x, position.y + (size.z / 2.5), position.z);
-		sensor.color = color;
-		checkpoint->bodies.PushBack(App->physics->AddBody(sensor, 0));
-		checkpoint->shape = sensor;
+		base.SetPos(position.x, position.y + (size.z / 2.5), position.z);
+		base.color = color;
+		arch->bodies.PushBack(App->physics->AddBody(base, 0));
+		arch->shape = base;
 
 		Cube c(size.x, size.z / 2, size.y);
 		c.color = color;
-		checkpoint->column_shape = c;
+		arch->column_shape = c;
 		c.SetPos(position.x , position.y + (size.z / 4), position.z + (size.z / 2.5));
-		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+		arch->bodies.PushBack(App->physics->AddBody(c, 0));
 		c.SetPos(position.x , position.y + (size.z / 4), position.z - (size.z / 2.5));
-		checkpoint->bodies.PushBack(App->physics->AddBody(c, 0));
+		arch->bodies.PushBack(App->physics->AddBody(c, 0));
 	}
 
-	return checkpoint;
+	return arch;
 
 }

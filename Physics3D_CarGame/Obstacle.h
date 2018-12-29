@@ -9,7 +9,7 @@ enum OBSTACLE_TYPE{
 	PENDULUM,
 	RAMP,
 	CURVE,
-	CHECKPOINT
+	ARCH
 };
 
 class Obstacle
@@ -63,16 +63,15 @@ public:
 	p2DynArray<PhysBody3D*> bodies;
 };
 
-class Checkpoint : public Obstacle
+class Arch : public Obstacle
 {
 public:
-	Checkpoint()
+	Arch()
 	{
-		type = CHECKPOINT;
+		type = ARCH;
 	};
-	~Checkpoint();
+	~Arch();
 	void Render() override;
 	Cube column_shape;
 	p2DynArray<PhysBody3D*> bodies;
-	PhysBody3D* checkpoint = nullptr;
 };
