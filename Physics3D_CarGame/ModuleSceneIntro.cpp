@@ -36,16 +36,38 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateObstacle({ -80,50,57.5 }, { 100,1,25 }));
 	obstacles.PushBack(CreateCurve({ -135,50,85 }, { 25,1,10 }, 270, 360));
 	obstacles.PushBack(CreateObstacle({ -162.5,50,165 }, { 25,1,150 }));
-
-	obstacles.PushBack(CreateRamp({ -162.5, 100, 235 }, { 25, 1, 5 }, 50, 10, 1));
-	obstacles.PushBack(CreateRamp({ -162.5, 100, 350 }, { 25, 1, 5 }, 50, 10, 0));
+	obstacles.PushBack(CreateRamp({ -162.5, 220, 230 }, { 25, 1, 15 }, 170, 2, 1));
+	obstacles.PushBack(CreateRamp({ -162.5, 220, 355 }, { 25, 1, 15 }, 170, 2, 0));
 	obstacles.PushBack(CreateObstacle({ -162.5,50, 370 }, { 25,1,50 }));
 	obstacles.PushBack(CreateCurve({ -190,50,400 }, { 25,1,10 }, 90, 180));
 	obstacles.PushBack(CreateObstacle({ -220,50, 427.5 }, { 50,1,25 }));
-
-/*	obstacles.PushBack(CreatePendulum({ 0,76,25 }, { 25,5,5 }, Blue, true));
-	obstacles.PushBack(CreatePendulum({ 0,76,35 }, { 25,5,5 }, Blue));
-	*/
+	obstacles.PushBack(CreateCurve({ -250,50,400 }, { 25,1,10 }, 0, 90));
+	obstacles.PushBack(CreateObstacle({ -277.5,50, 360 }, { 25,1,75 }));
+	obstacles.PushBack(CreateCurve({ -305,50,317.5 }, { 25,1,10 }, 180, 360));
+	obstacles.PushBack(CreateCurve({ -360,50,327.5 }, { 25,1,10 }, 0, 180));
+	obstacles.PushBack(CreateCurve({ -415,50,317.5 }, { 25,1,10 }, 180, 360));
+	obstacles.PushBack(CreateObstacle({ -442.5,50, 360 }, { 25,1,75 }));
+	obstacles.PushBack(CreateRamp({ -442, 100, 395 }, { 25, 1, 5 }, 50, 72, 1, false, true));
+	obstacles.PushBack(CreateObstacle({ -478,50, 447.5 }, { 25,1,100 }));
+	obstacles.PushBack(CreateCurve({ -505.5,50,500 }, { 25,1,10 }, 90, 180));
+	obstacles.PushBack(CreateObstacle({ -548,50, 527.5 }, { 75,1,25 }));
+	obstacles.PushBack(CreateCurve({ -590.5,50,555 }, { 25,1,10 }, 270, 360));
+	obstacles.PushBack(CreateObstacle({ -618,50, 585 }, { 25,1,50 }));
+	obstacles.PushBack(CreateCurve({ -590.5,50,615 }, { 25,1,10 }, 0, 90));
+	obstacles.PushBack(CreateCurve({ -590.5,50,615 }, { 25,1,10 }, 90, 180));
+	obstacles.PushBack(CreateObstacle({ -563,50, 598 }, { 25,1,25 }));
+	obstacles.PushBack(CreateRamp({ -563, 140, 588.5 }, { 25, 1, 10 }, 90, 6, 0));
+	obstacles.PushBack(CreateObstacle({ -563,64.5, 482 }, { 25,1,115 }));
+	obstacles.PushBack(CreateCurve({ -535.5,64.5, 419.5 }, { 25,1,10 }, 270, 360));
+	obstacles.PushBack(CreateRamp({ -538, 244.5, 392}, { 17, 1, 25 }, 180, 3, 0, true));
+	obstacles.PushBack(CreateObstacle({ -375, 75, 392 }, { 75,1,25 }));
+	obstacles.PushBack(CreateRamp({ -335, 105, 399 }, { 10, 1, 50 }, 30, 288, 0, true, true));
+	obstacles.PushBack(CreateObstacle({ -292.5, 75, 550.5 }, { 75,1,25 }));
+	obstacles.PushBack(CreateCurve({ -250, 75, 523 }, { 25,1,10 }, 90, 180));
+	obstacles.PushBack(CreateObstacle({ -222.5, 75, 460 }, { 25, 1, 125 }));
+	obstacles.PushBack(CreatePendulum({ -222.5,101, 435 }, { 25,5,5 }, Blue, true));
+	obstacles.PushBack(CreatePendulum({ -222.5,101, 455 }, { 25,5,5 }, Blue));
+	obstacles.PushBack(CreatePendulum({ -222.5,101, 475 }, { 25,5,5 }, Blue, true));
 
 	return ret;
 }
@@ -78,22 +100,22 @@ update_status ModuleSceneIntro::Update(float dt)
 	if (!debug_mode)
 	{
 		//Camera position behind player
-		vec3 back_vector = App->player->vehicle->GetBackVector();
+		vec3 back_vector = App->player->vehicle->GetBackwardVector();
+		vec3 up_vector = App->player->vehicle->GetUpwardVector();
 
 		float distance_value = (App->player->vehicle->GetKmh()-CAMERA_MIN_SPEED) / ((CAMERA_MAX_SPEED)- CAMERA_MIN_SPEED); // normalize player speed
 		camera_distance = max(CAMERA_MIN_DISTANCE,((1 - distance_value)*CAMERA_MIN_DISTANCE) + (distance_value  * CAMERA_MAX_DISTANCE)); //lerp camera distance with normalized player speed
 
-		back_vector.z *= camera_distance;
-		back_vector.x *= camera_distance;
-		back_vector.y += CAMERA_Y_OFFSET;
+		back_vector *= camera_distance;
+		up_vector *= CAMERA_Y_OFFSET;
 
-		App->camera->Position = back_vector + App->player->vehicle->GetPos();
-		App->camera->Reference = back_vector + App->player->vehicle->GetPos();
+		vec3 camera_vector = up_vector + back_vector;
+		App->camera->Position = camera_vector + App->player->vehicle->GetPos();
+		App->camera->Reference = camera_vector + App->player->vehicle->GetPos();
 
 		//Camera look at player
 		vec3 vehicle_pos = App->player->vehicle->GetPos();
-		vehicle_pos.y += CAMERA_Y_OFFSET;
-		App->camera->LookAt(vehicle_pos);
+		App->camera->LookAt(vehicle_pos+up_vector);
 	}
 
 	Plane p(0, 1, 0, 0);
@@ -137,7 +159,7 @@ Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color
 	return pendulum;
 }
 
-Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir, bool loop, Color color)
+Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir, bool horizontal, bool loop, Color color)
 {
 	Cube c = {size.x, size.y, size.z};
 	c.color = color;
@@ -148,7 +170,7 @@ Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chu
 
 	vec3 circle_center = { position.x, position.y + radius, position.z };
 	int angle = 180;
-	int angle_offset = 2;
+	int angle_offset = 5;
 	float loopincr = 0;
 
 	for (int i = 0; i < chunks; i++)
@@ -156,20 +178,35 @@ Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chu
 		if (dir == 0)
 		{
 			angle += angle_offset;
-			loopincr += 0.2F;
+			loopincr += 0.5F;
 		}
 		else
 		{
 			angle -= angle_offset;
-			loopincr -= 0.2F;
+			loopincr -= 0.5F;
 		}
-		vec3 next_position = rotate(circle_center - position, angle, { 1, 0, 0 });
+
+		vec3 next_position;
+		if (!horizontal)
+		{
+			c.SetRotation(angle, { 1, 0, 0 });
+			next_position = rotate(circle_center - position, angle, { 1, 0, 0 });
+		}
+		else
+		{
+			c.SetRotation(angle, { 0, 0, 1 });
+			next_position = rotate(circle_center - position, angle, { 0, 0, 1 });
+		}
+		
 		if (loop)
-			c.SetPos(next_position.x + position.x + loopincr, next_position.y + position.y, next_position.z + position.z);
+		{
+			if(!horizontal)
+				c.SetPos(next_position.x + position.x + loopincr, next_position.y + position.y, next_position.z + position.z);
+			else
+				c.SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z + loopincr);
+		}
 		else
 			c.SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z);
-
-		c.SetRotation(angle, { 1, 0, 0 });
 
 		PhysBody3D* pbody = App->physics->AddBody(c, 0);
 		ramp->bodies[i] = pbody;

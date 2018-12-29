@@ -74,7 +74,8 @@ public:
 	void Brake(float force);
 	void Turn(float degrees);
 	float GetKmh() const;
-	vec3 GetBackVector() const;
+	vec3 GetUpwardVector() const;
+	vec3 GetBackwardVector() const;
 
 public:
 

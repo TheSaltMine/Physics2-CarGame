@@ -36,7 +36,7 @@ bool ModulePlayer::Start()
 	car.body_size.Set(2, 0.5, 3.5);
 	car.body_offset.Set(0, 1.5, 0);
 
-	car.mass = 100.0f;
+	car.mass = 300.0f;
 	car.suspensionStiffness = 15.88f;
 	car.suspensionCompression = 0.83f;
 	car.suspensionDamping = 0.88f;
@@ -110,7 +110,7 @@ bool ModulePlayer::Start()
 	car.wheels[3].steering = false;
 
 	vehicle = App->physics->AddVehicle(car);
-	vehicle->SetPos(0, 50, 10);
+	vehicle->SetPos(-0, 50, 0);
 	vehicle->collision_listeners.add(App->scene_intro);
 	return true;
 }
@@ -147,7 +147,10 @@ update_status ModulePlayer::Update(float dt)
 
 	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
-		brake = BRAKE_POWER;
+		if(vehicle->GetKmh() <= 0)
+			acceleration = -MAX_ACCELERATION;
+		else
+			brake = BRAKE_POWER;
 	}
 
 	vehicle->ApplyEngineForce(acceleration);

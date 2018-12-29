@@ -140,10 +140,18 @@ float PhysVehicle3D::GetKmh() const
 	return vehicle->getCurrentSpeedKmHour();
 }
 
-vec3 PhysVehicle3D::GetBackVector() const
+vec3 PhysVehicle3D::GetUpwardVector() const
 {
-	vec3 back_vector;
+	vec3 vector;
+	btVector3 upward_vector = vehicle->getUpwardVector();
+	vector.Set(upward_vector.getX(), upward_vector.getY(), upward_vector.getZ() );
+	return vector;
+}
+
+vec3 PhysVehicle3D::GetBackwardVector() const
+{
+	vec3 backward_vector;
 	btVector3 forward_vector = vehicle->getForwardVector();
-	back_vector.Set(-(forward_vector.getX()), -(forward_vector.getY()), -(forward_vector.getZ()) );
-	return back_vector;
+	backward_vector.Set(-forward_vector.getX(), -forward_vector.getY(), -forward_vector.getZ());
+	return backward_vector;
 }
