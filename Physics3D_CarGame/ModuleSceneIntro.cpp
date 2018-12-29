@@ -62,6 +62,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateRoad({ -162.5,50, 370 }, { 25,1,50 }));
 	CreateCurve({ -190,50,400 }, { 25,1,10 }, 90, 180);
 	obstacles.PushBack(CreateRoad({ -220,50, 427.5 }, { 25,1,50 }, 90));
+	obstacles.PushBack(CreatePillar({ -220,55, 427.5 }, 2.5, 10, 90));
 	CreateCurve({ -250,50,400 }, { 25,1,10 }, 0, 90);
 	obstacles.PushBack(CreateRoad({ -277.5,50, 360 }, { 25,1,75 }));
 	CreateCurve({ -305,50,317.5 }, { 25,1,10 }, 180, 360);
@@ -73,6 +74,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(CreateRoad({ -478,50, 447.5 }, { 25,1,100 }));
 	CreateCurve({ -505.5,50,500 }, { 25,1,10 }, 90, 180);
 	obstacles.PushBack(CreateRoad({ -548,50, 527.5 }, { 25,1,75 }, 90));
+	obstacles.PushBack(CreatePillar({ -562,57, 527.5 }, 2.5, 15, 90));
 	CreateCurve({ -590.5,50,555 }, { 25,1,10 }, 270, 360);
 	obstacles.PushBack(CreateRoad({ -618,50, 585 }, { 25,1,50 }));
 	CreateCurve({ -590.5,50,615 }, { 25,1,10 }, 0, 90);
@@ -210,15 +212,15 @@ Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color
 	Cube anchor_shape(1, 1, 1);
 	anchor_shape.SetPos(position.x, position.y, position.z);
 
-	Cube b(size.x, size.y, size.z);
-	b.color = color;
-	b.SetPos(position.x + size.x, position.y, position.z);	
+	Cube* b = new Cube(size.x, size.y, size.z);
+	b->color = color;
+	b->SetPos(position.x + size.x, position.y, position.z);
 	if (left)
-		b.transform.rotate(180, { 0,0,1 });
+		b->transform.rotate(180, { 0,0,1 });
 	pendulum->shape = b;
 
 	pendulum->anchor = App->physics->AddBody(anchor_shape, 0);
-	pendulum->bodies.PushBack(App->physics->AddBody(b, 90000));
+	pendulum->bodies.PushBack(App->physics->AddBody(*b, 90000));
 	App->physics->AddConstraintHinge(*pendulum->anchor, *pendulum->bodies[0], { 0, 0 ,0 }, { -size.x/2, 0, 0 }, { 0,0,1 }, { 0,0,1 }, true);
 
 	return pendulum;
@@ -226,8 +228,8 @@ Pendulum* ModuleSceneIntro::CreatePendulum(vec3 position, vec3 size, Color color
 
 Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir, bool horizontal, bool loop, Color color)
 {
-	Cube c = {size.x, size.y, size.z};
-	c.color = color;
+	Cube* c = new Cube{size.x, size.y, size.z};
+	c->color = color;
 	Ramp* ramp = new Ramp();
 	ramp->shape = c;
 
@@ -252,26 +254,26 @@ Ramp* ModuleSceneIntro::CreateRamp(vec3 position, vec3 size, int radius, int chu
 		vec3 next_position;
 		if (!horizontal)
 		{
-			c.SetRotation(angle, { 1, 0, 0 });
+			c->SetRotation(angle, { 1, 0, 0 });
 			next_position = rotate(circle_center - position, angle, { 1, 0, 0 });
 		}
 		else
 		{
-			c.SetRotation(angle, { 0, 0, 1 });
+			c->SetRotation(angle, { 0, 0, 1 });
 			next_position = rotate(circle_center - position, angle, { 0, 0, 1 });
 		}
 		
 		if (loop)
 		{
 			if(!horizontal)
-				c.SetPos(next_position.x + position.x + loopincr, next_position.y + position.y, next_position.z + position.z);
+				c->SetPos(next_position.x + position.x + loopincr, next_position.y + position.y, next_position.z + position.z);
 			else
-				c.SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z + loopincr);
+				c->SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z + loopincr);
 		}
 		else
-			c.SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z);
+			c->SetPos(next_position.x + position.x, next_position.y + position.y, next_position.z + position.z);
 
-		PhysBody3D* pbody = App->physics->AddBody(c, 0);
+		PhysBody3D* pbody = App->physics->AddBody(*c, 0);
 		ramp->bodies.PushBack(pbody);
 	}
 
@@ -282,12 +284,12 @@ Road* ModuleSceneIntro::CreateRoad(vec3 position, vec3 size, float angle, Color 
 {
 	Road* obstacle = new Road();
 
-	Cube road(size.x, size.y, size.z);
-	road.color = color;
-	road.SetPos(position.x, position.y, position.z);
-	road.SetRotation(angle, { 0,1,0 });
+	Cube* road = new Cube(size.x, size.y, size.z);
+	road->color = color;
+	road->SetPos(position.x, position.y, position.z);
+	road->SetRotation(angle, { 0,1,0 });
 	obstacle->shape = road;
-	obstacle->bodies.PushBack(App->physics->AddBody(road, 0));
+	obstacle->bodies.PushBack(App->physics->AddBody(*road, 0));
 
 	Cube border(size.x / 6, size.y, size.z);
 	border.color = Gray;
@@ -334,11 +336,11 @@ Arch* ModuleSceneIntro::CreateArch(vec3 position, vec3 size, float angle, Color 
 {
 	Arch* arch = new Arch();
 
-	Cube base(size.x, size.y, size.z);
-	base.SetPos(position.x, position.y + (size.x/2), position.z);
-	base.SetRotation(angle, { 0,1,0 });
-	base.color = color;
-	arch->bodies.PushBack(App->physics->AddBody(base, 0));
+	Cube* base = new Cube(size.x, size.y, size.z);
+	base->SetPos(position.x, position.y + (size.x/2), position.z);
+	base->SetRotation(angle, { 0,1,0 });
+	base->color = color;
+	arch->bodies.PushBack(App->physics->AddBody(*base, 0));
 	arch->shape = base;
 
 	Cube c(size.y, size.x / 2, size.z);
@@ -351,4 +353,19 @@ Arch* ModuleSceneIntro::CreateArch(vec3 position, vec3 size, float angle, Color 
 
 	return arch;
 
+}
+
+Obstacle* ModuleSceneIntro::CreatePillar(vec3 position, float radius, float height, float angle, vec3 axis, Color color)
+{
+	Obstacle* pillar = new Obstacle();
+
+	Cylinder* primitive = new Cylinder(radius, height);
+	primitive->SetPos(position.x, position.y, position.z);
+	primitive->SetRotation(angle, { 0,0,1 });
+	primitive->color = color;
+
+	pillar->shape = primitive;
+	pillar->bodies.PushBack(App->physics->AddBody(*primitive, 0));
+
+	return pillar;
 }

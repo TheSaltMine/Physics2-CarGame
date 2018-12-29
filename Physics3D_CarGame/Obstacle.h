@@ -20,7 +20,7 @@ public:
 
 	OBSTACLE_TYPE type = BASIC;
 	p2DynArray<PhysBody3D*> bodies;
-	Cube shape;
+	Primitive* shape;
 
 	virtual void Render();
 };

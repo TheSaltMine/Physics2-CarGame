@@ -34,6 +34,7 @@ public:
 	void CreateCurve(vec3 position, vec3 size, float initial_angle, float final_angle, Color color = White);
 	Arch* CreateArch(vec3 position, vec3 size, float angle = 0.0f, Color color = Green);
 	Road* CreateRoad(vec3 position, vec3 size, float angle = 0.0f, Color color = White);
+	Obstacle* CreatePillar(vec3 position, float radius, float height, float angle = 0.0f, vec3 axis = {0,0,1}, Color color = Maroon);
 
 public:
 	p2DynArray<Obstacle*> obstacles;
