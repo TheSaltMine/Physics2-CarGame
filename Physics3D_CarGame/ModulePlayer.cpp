@@ -123,6 +123,11 @@ bool ModulePlayer::CleanUp()
 	return true;
 }
 
+PhysVehicle3D * ModulePlayer::GetVehicle()
+{
+	return vehicle;
+}
+
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {

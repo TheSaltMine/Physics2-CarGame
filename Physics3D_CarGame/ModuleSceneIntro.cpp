@@ -95,6 +95,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(new Pendulum({ -222.5,101, 475 }, { 25,5,5 }, Blue, true));
 	CreateCurve({ -195, 75, 393 }, { 25,1,10 }, 270, 360);
 	obstacles.PushBack(new Ramp({ -200, 255, 365.5 }, { 17, 1, 25 }, 180, 2, 0, true));
+	obstacles.PushBack(new Spinner({ -125, 80, 365.5 }, { 3, 1 , 30 }));
 	obstacles.PushBack(new Ramp({ -60, 255, 365.5 }, { 16, 1, 25 }, 180, 2, 1, true));
 	CreateCurve({ -70, 75, 393 }, { 25,1,10 }, 180, 270);
 	obstacles.PushBack(new Road({ -42.5, 75, 435 }, { 25, 1, 75 }));
@@ -134,14 +135,14 @@ update_status ModuleSceneIntro::Update(float dt)
 	{
 		mat4x4 matrix;
 		current_checkpoint->GetTransform(&matrix);
-		App->player->vehicle->SetTransform(&matrix);
+		App->player->GetVehicle()->SetTransform(&matrix);
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 	{
 		current_checkpoint = start;
 		mat4x4 matrix;
 		current_checkpoint->GetTransform(&matrix);
-		App->player->vehicle->SetTransform(&matrix);
+		App->player->GetVehicle()->SetTransform(&matrix);
 		game_timer.Start();
 		debug_mode = false;
 	}
@@ -149,21 +150,21 @@ update_status ModuleSceneIntro::Update(float dt)
 	if (!debug_mode)
 	{
 		//Camera position behind player
-		vec3 back_vector = App->player->vehicle->GetBackwardVector();
-		vec3 up_vector = App->player->vehicle->GetUpwardVector();
+		vec3 back_vector = App->player->GetVehicle()->GetBackwardVector();
+		vec3 up_vector = App->player->GetVehicle()->GetUpwardVector();
 
-		float distance_value = (App->player->vehicle->GetKmh()-CAMERA_MIN_SPEED) / ((CAMERA_MAX_SPEED)- CAMERA_MIN_SPEED); // normalize player speed
+		float distance_value = (App->player->GetVehicle()->GetKmh()-CAMERA_MIN_SPEED) / ((CAMERA_MAX_SPEED)- CAMERA_MIN_SPEED); // normalize player speed
 		camera_distance = max(CAMERA_MIN_DISTANCE,((1 - distance_value)*CAMERA_MIN_DISTANCE) + (distance_value  * CAMERA_MAX_DISTANCE)); //lerp camera distance with normalized player speed
 
 		back_vector *= camera_distance;
 		up_vector *= CAMERA_Y_OFFSET;
 
 		vec3 camera_vector = up_vector + back_vector;
-		App->camera->Position = camera_vector + App->player->vehicle->GetPos();
-		App->camera->Reference = camera_vector + App->player->vehicle->GetPos();
+		App->camera->Position = camera_vector + App->player->GetVehicle()->GetPos();
+		App->camera->Reference = camera_vector + App->player->GetVehicle()->GetPos();
 
 		//Camera look at player
-		vec3 vehicle_pos = App->player->vehicle->GetPos();
+		vec3 vehicle_pos = App->player->GetVehicle()->GetPos();
 		App->camera->LookAt(vehicle_pos+up_vector);
 	}
 
@@ -186,7 +187,7 @@ update_status ModuleSceneIntro::Update(float dt)
 
 void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
-	if (body1 == App->player->vehicle)
+	if (body1 == App->player->GetVehicle())
 	{
 		if (body2 == finish)
 		{

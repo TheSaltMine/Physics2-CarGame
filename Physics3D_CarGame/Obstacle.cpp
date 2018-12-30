@@ -61,6 +61,20 @@ Pendulum::~Pendulum()
 }
 
 
+Spinner::Spinner(vec3 position, vec3 size, Color color)
+{
+	Cube anchor(1, 1, 1);
+	anchor.SetPos(position.x, position.y, position.z);
+	PhysBody3D* anch = App->physics->AddBody(anchor, 0);
+
+	Cube* c = new Cube(size.x, size.y, size.z);
+	c->SetPos(position.x, position.y, position.z);
+	c->color = color;
+	shape = c;
+	bodies.PushBack(App->physics->AddBody(*c, 50));
+	App->physics->AddConstraintHinge(*anch, *bodies[0], { 0, 0 ,0 }, { 0, 0, 0 }, {1,0,0 }, { 1,0,0 }, true, true);
+}
+
 Arch::Arch(vec3 position, vec3 size, float angle, Color color)
 {
 	type = ARCH;

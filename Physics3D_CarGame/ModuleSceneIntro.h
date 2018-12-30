@@ -14,9 +14,9 @@ struct PhysBody3D;
 struct Obstacle;
 struct Ramp;
 struct Pendulum;
-struct Curve;
 struct Arch;
 struct Road;
+struct Spinner;
 
 class ModuleSceneIntro : public Module
 {

@@ -57,3 +57,10 @@ public:
 	void Render() override;
 	Cube column_shape;
 };
+
+class Spinner : public Obstacle
+{
+public:
+	Spinner(vec3 position, vec3 size, Color color = Yellow);
+	~Spinner() {};
+};

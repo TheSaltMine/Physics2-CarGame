@@ -19,12 +19,14 @@ public:
 	bool Start();
 	update_status Update(float dt);
 	bool CleanUp();
+	PhysVehicle3D* GetVehicle();
 
-public:
+private:
 
 	PhysVehicle3D* vehicle;
 	float turn;
 	float acceleration;
 	float brake;
+public:
 	bool can_move = true;
 };
