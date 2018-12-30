@@ -128,6 +128,11 @@ PhysVehicle3D * ModulePlayer::GetVehicle()
 	return vehicle;
 }
 
+void ModulePlayer::Stop()
+{
+	vehicle->SetVelocity(0,0,0);
+}
+
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {

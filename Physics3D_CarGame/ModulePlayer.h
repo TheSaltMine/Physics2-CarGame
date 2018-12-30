@@ -20,6 +20,7 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 	PhysVehicle3D* GetVehicle();
+	void Stop();
 
 private:
 

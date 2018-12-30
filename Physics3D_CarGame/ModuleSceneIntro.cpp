@@ -243,7 +243,7 @@ Obstacle* ModuleSceneIntro::CreatePillar(vec3 position, float radius, float heig
 
 void ModuleSceneIntro::ResetCheckpoint(bool resetlvl)
 {
-	//App->player->vehicle.
+	App->player->Stop();
 	if (resetlvl)
 	{
 		current_checkpoint = start;
