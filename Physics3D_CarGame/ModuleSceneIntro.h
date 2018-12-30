@@ -29,11 +29,7 @@ public:
 	bool CleanUp();
 
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
-	Pendulum* CreatePendulum(vec3 position, vec3 size, Color color = Blue, bool left = false);
-	Ramp* CreateRamp(vec3 position, vec3 size, int radius, int chunks, int dir = 0, bool horizontal = false, bool loop = false, Color color = Red);
 	void CreateCurve(vec3 position, vec3 size, float initial_angle, float final_angle, Color color = White);
-	Arch* CreateArch(vec3 position, vec3 size, float angle = 0.0f, Color color = Green);
-	Road* CreateRoad(vec3 position, vec3 size, float angle = 0.0f, Color color = White);
 	Obstacle* CreatePillar(vec3 position, float radius, float height, float angle = 0.0f, vec3 axis = {0,0,1}, Color color = Maroon);
 
 public:
