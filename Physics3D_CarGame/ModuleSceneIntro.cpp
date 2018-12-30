@@ -86,7 +86,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(new Ramp({ -538, 244.5, 392}, { 17, 1, 25 }, 180, 3, 0, true));
 	obstacles.PushBack(new Road({ -375, 75, 392 }, { 25,1,75 }, 90));
 	obstacles.PushBack(new Ramp({ -335, 100, 399 }, { 10, 1, 42 }, 25, 288, 0, true, true));
-	obstacles.PushBack(new Road({ -292.5, 75, 550.5 }, { 25,1,75 }, 90));
+	obstacles.PushBack(new Road({ -292.5, 75, 550.5 }, { 25, 1 ,75 }, 90));
 	obstacles.PushBack(new Arch({ -292.5, 75, 550.5 }, { 25, 5 ,5 }, 90));
 	CreateCurve({ -250, 75, 523 }, { 25,1,10 }, 90, 180);
 	obstacles.PushBack(new Road({ -222.5, 75, 460 }, { 25, 1, 125 }));
@@ -94,14 +94,15 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(new Pendulum({ -222.5,101, 455 }, { 25,5,5 }, Blue));
 	obstacles.PushBack(new Pendulum({ -222.5,101, 475 }, { 25,5,5 }, Blue, true));
 	CreateCurve({ -195, 75, 393 }, { 25,1,10 }, 270, 360);
-	obstacles.PushBack(new Road({ -140, 75, 365.5 }, { 25, 1, 100 }, 90));
-	CreateCurve({ -85, 75, 393 }, { 25,1,10 }, 180, 270);
-	obstacles.PushBack(new Road({ -57.5, 75, 435 }, { 25, 1, 75 }));
-	CreateCurve({ -85, 75, 475 }, { 25,1,10 }, 90, 180);
-	obstacles.PushBack(new Road({ -127.5, 75, 502.5 }, { 25, 1, 75 }, 90));
-	obstacles.PushBack(new Ramp({ -155, 255,502.5 }, { 18, 1, 25 }, 180, 7, 1, true));
-	obstacles.PushBack(new Road({ -430, 125, 500 }, { 25, 1, 75 }, 90));
-	obstacles.PushBack(new Arch({ -460, 125, 500 }, { 25, 5 ,5 }, 90, Red));
+	obstacles.PushBack(new Ramp({ -200, 255, 365.5 }, { 17, 1, 25 }, 180, 2, 0, true));
+	obstacles.PushBack(new Ramp({ -60, 255, 365.5 }, { 16, 1, 25 }, 180, 2, 1, true));
+	CreateCurve({ -70, 75, 393 }, { 25,1,10 }, 180, 270);
+	obstacles.PushBack(new Road({ -42.5, 75, 435 }, { 25, 1, 75 }));
+	CreateCurve({ -70, 75, 475 }, { 25,1,10 }, 90, 180);
+	obstacles.PushBack(new Road({ -112.5, 75, 502.5 }, { 25, 1, 75 }, 90));
+	obstacles.PushBack(new Ramp({ -140, 255,502.5 }, { 18, 1, 25 }, 180, 7, 1, true));
+	obstacles.PushBack(new Road({ -425, 125, 500 }, { 25, 1, 75 }, 90));
+	obstacles.PushBack(new Arch({ -455, 125, 500 }, { 25, 5 ,5 }, 90, Red));
 
 	return ret;
 }
