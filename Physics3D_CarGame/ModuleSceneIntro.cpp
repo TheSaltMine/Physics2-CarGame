@@ -94,7 +94,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(new Pendulum({ -222.5,101, 455 }, { 25,5,5 }, Blue));
 	obstacles.PushBack(new Pendulum({ -222.5,101, 475 }, { 25,5,5 }, Blue, true));
 	CreateCurve({ -195, 75, 393 }, { 25,1,10 }, 270, 360);
-	obstacles.PushBack(new Road({ -140, 75, 365.5 }, { 10, 1, 100 }, 90));
+	obstacles.PushBack(new Road({ -140, 75, 365.5 }, { 25, 1, 100 }, 90));
 	CreateCurve({ -85, 75, 393 }, { 25,1,10 }, 180, 270);
 	obstacles.PushBack(new Road({ -57.5, 75, 435 }, { 25, 1, 75 }));
 	CreateCurve({ -85, 75, 475 }, { 25,1,10 }, 90, 180);
