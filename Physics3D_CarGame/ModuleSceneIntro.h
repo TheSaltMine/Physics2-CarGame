@@ -31,6 +31,7 @@ public:
 	void OnCollision(PhysBody3D* body1, PhysBody3D* body2);
 	void CreateCurve(vec3 position, vec3 size, float initial_angle, float final_angle, Color color = White);
 	Obstacle* CreatePillar(vec3 position, float radius, float height, float angle = 0.0f, vec3 axis = {0,0,1}, Color color = Maroon);
+	void ResetCheckpoint(bool resetlvl = false);
 
 public:
 	p2DynArray<Obstacle*> obstacles;
@@ -38,6 +39,7 @@ public:
 
 	//sensors
 	p2DynArray<PhysBody3D*> sensors;
+	PhysBody3D* death;
 	PhysBody3D* start;
 	PhysBody3D* finish;
 	PhysBody3D* current_checkpoint = nullptr;

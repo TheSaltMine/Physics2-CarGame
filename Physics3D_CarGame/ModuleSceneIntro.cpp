@@ -48,6 +48,11 @@ bool ModuleSceneIntro::Start()
 	tmp_sensor->SetAsSensor(true);
 	sensors.PushBack(tmp_sensor);
 
+	Cube cub(2000, 35, 2000);
+	cub.SetPos(0, 5, 0);
+	death = App->physics->AddBody(cub, 0);
+	death->SetAsSensor(true);
+
 	current_checkpoint = start;
 
 	//Map obstacles
@@ -132,18 +137,11 @@ update_status ModuleSceneIntro::Update(float dt)
 	}
 	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 	{
-		mat4x4 matrix;
-		current_checkpoint->GetTransform(&matrix);
-		App->player->vehicle->SetTransform(&matrix);
+		ResetCheckpoint();
 	}
 	else if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 	{
-		current_checkpoint = start;
-		mat4x4 matrix;
-		current_checkpoint->GetTransform(&matrix);
-		App->player->vehicle->SetTransform(&matrix);
-		game_timer.Start();
-		debug_mode = false;
+		ResetCheckpoint(true);
 	}
 
 	if (!debug_mode)
@@ -188,6 +186,10 @@ void ModuleSceneIntro::OnCollision(PhysBody3D* body1, PhysBody3D* body2)
 {
 	if (body1 == App->player->vehicle)
 	{
+		if (body2 == death)
+		{
+			ResetCheckpoint();
+		}
 		if (body2 == finish)
 		{
 			//finish game
@@ -236,4 +238,18 @@ Obstacle* ModuleSceneIntro::CreatePillar(vec3 position, float radius, float heig
 	pillar->bodies.PushBack(App->physics->AddBody(*primitive, 0));
 
 	return pillar;
+}
+
+void ModuleSceneIntro::ResetCheckpoint(bool resetlvl)
+{
+	//App->player->vehicle.
+	if (resetlvl)
+	{
+		current_checkpoint = start;
+		game_timer.Start();
+		debug_mode = false;
+	}
+	mat4x4 matrix;
+	current_checkpoint->GetTransform(&matrix);
+	App->player->vehicle->SetTransform(&matrix);
 }
