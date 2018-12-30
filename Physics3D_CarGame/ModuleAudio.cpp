@@ -135,6 +135,7 @@ unsigned int ModuleAudio::LoadFx(const char* path)
 	else
 	{
 		fx.add(chunk);
+		Mix_VolumeChunk(chunk, 15);
 		ret = fx.count();
 	}
 

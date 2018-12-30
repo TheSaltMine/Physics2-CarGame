@@ -20,6 +20,7 @@ bool ModuleSceneIntro::Start()
 	LOG("Loading Intro assets");
 	bool ret = true;
 
+	fx = App->audio->LoadFx("audio/fx.wav");
 	App->audio->PlayMusic("audio/music.ogg");
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
@@ -110,6 +111,7 @@ bool ModuleSceneIntro::Start()
 	obstacles.PushBack(new Road({ -425, 125, 500 }, { 25, 1, 75 }, 90));
 	obstacles.PushBack(new Arch({ -455, 125, 500 }, { 25, 5 ,5 }, 90, Red));
 
+	App->audio->PlayFx(fx);
 	return ret;
 }
 
@@ -243,6 +245,7 @@ Obstacle* ModuleSceneIntro::CreatePillar(vec3 position, float radius, float heig
 
 void ModuleSceneIntro::ResetCheckpoint(bool resetlvl)
 {
+	App->audio->PlayFx(fx);
 	App->player->Stop();
 	if (resetlvl)
 	{

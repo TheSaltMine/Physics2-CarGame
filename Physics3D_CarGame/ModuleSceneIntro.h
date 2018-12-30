@@ -45,5 +45,6 @@ public:
 	PhysBody3D* current_checkpoint = nullptr;
 
 	bool debug_mode = false;
+	int fx;
 	float camera_distance = CAMERA_MIN_DISTANCE;
 };
