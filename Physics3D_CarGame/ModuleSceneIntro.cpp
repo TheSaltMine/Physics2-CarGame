@@ -130,13 +130,13 @@ update_status ModuleSceneIntro::Update(float dt)
 		App->player->can_move = !App->player->can_move;
 		App->camera->debug = !App->camera->debug;
 	}
-	if (App->input->GetKey(SDL_SCANCODE_F11) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 	{
 		mat4x4 matrix;
 		current_checkpoint->GetTransform(&matrix);
 		App->player->vehicle->SetTransform(&matrix);
 	}
-	else if (App->input->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
+	else if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
 	{
 		current_checkpoint = start;
 		mat4x4 matrix;
@@ -173,11 +173,11 @@ update_status ModuleSceneIntro::Update(float dt)
 	}
 
 
-	char title[100];
+	char title[150];
 	Uint32 ms = game_timer.Read();
 	Uint32 seconds = ms/1000;
 	Uint32 minutes = seconds/60;
-	sprintf_s(title, "PLAYER_TIME: %02d:%02d:%02d   GOLD_TIME: 01:30:00    SILVER: 02:30:00    BRONZE: 05:00:00", minutes, seconds - (60*minutes), (ms % 1000)/10);
+	sprintf_s(title, "PLAYER_TIME: %02d:%02d:%02d   GOLD_TIME: 01:30:00    SILVER: 02:30:00    BRONZE: 05:00:00    R = Last Checkpoint    T = Restart Level", minutes, seconds - (60*minutes), (ms % 1000)/10);
 	App->window->SetTitle(title);
 
 
